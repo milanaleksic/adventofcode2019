@@ -1,42 +1,56 @@
-pub fn fuel(f: i32) -> i32 {
-    f / 3 - 2
+pub struct Fuel {
+    pub value: i32
+}
+
+impl Fuel {
+    pub fn from(fuel: i32) -> Fuel {
+        Fuel {
+            value: fuel.clone()
+        }
+    }
+    pub fn fuel(f: i32) -> i32 {
+        f / 3 - 2
+    }
+}
+
+impl Iterator for Fuel {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<i32> {
+        self.value = Fuel::fuel(self.value);
+        if self.value >= 0 {
+            Some(self.value)
+        } else {
+            None
+        }
+    }
 }
 
 pub fn fuel2(f: i32) -> i32 {
-    let mut fr = 0;
-    let mut ft = f;
-    loop {
-        ft = fuel(ft);
-        if ft > 0 {
-            fr += ft;
-        } else {
-            break;
-        }
-    }
-    fr
+    Fuel::from(f)
+        .into_iter()
+        .fold(0, |acc, x| acc + x)
 }
 
 mod tests {
-    use super::*;
-
     #[test]
     fn test12() {
-        assert_eq!(fuel(12), 2);
+        assert_eq!(super::Fuel::fuel(12), 2);
     }
 
     #[test]
     fn test14() {
-        assert_eq!(fuel(14), 2);
+        assert_eq!(Fuel::fuel(14), 2);
     }
 
     #[test]
     fn test1969() {
-        assert_eq!(fuel(1969), 654);
+        assert_eq!(Fuel::fuel(1969), 654);
     }
 
     #[test]
     fn test100756() {
-        assert_eq!(fuel(100756), 33583);
+        assert_eq!(Fuel::fuel(100756), 33583);
     }
 
     #[test]
