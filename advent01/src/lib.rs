@@ -27,7 +27,7 @@ impl Iterator for Fuel {
 }
 
 pub fn fuel2(f: i32) -> i32 {
-    Fuel::from(f).fold(0, |acc, x| acc + x)
+    Fuel::from(f).sum()
 }
 
 mod tests {

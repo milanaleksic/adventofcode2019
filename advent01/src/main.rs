@@ -2,14 +2,16 @@ use advent01::{Fuel, fuel2};
 use std::fs;
 
 fn main() {
-    println!("answer 1: {}", read_input_as_ints("src/input.txt")
+    let answer1: i32 = read_input_as_ints("src/input.txt")
         .iter()
         .map(|x| Fuel::fuel(x.clone()))
-        .fold(0, |acc, x| acc + x));
-    println!("answer2: {}", read_input_as_ints("src/input2.txt")
+        .sum();
+    println!("answer 1: {}", answer1);
+    let answer2:i32 = read_input_as_ints("src/input2.txt")
         .iter()
         .map(|x| fuel2(x.clone()))
-        .fold(0, |acc, x| acc + x));
+        .sum();
+    println!("answer2: {}", answer2); 
 }
 
 fn read_input_as_ints(path: &str) -> Vec<i32> {
