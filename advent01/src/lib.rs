@@ -27,15 +27,14 @@ impl Iterator for Fuel {
 }
 
 pub fn fuel2(f: i32) -> i32 {
-    Fuel::from(f)
-        .into_iter()
-        .fold(0, |acc, x| acc + x)
+    Fuel::from(f).fold(0, |acc, x| acc + x)
 }
 
 mod tests {
+    use super::{fuel2,Fuel};
     #[test]
     fn test12() {
-        assert_eq!(super::Fuel::fuel(12), 2);
+        assert_eq!(Fuel::fuel(12), 2);
     }
 
     #[test]
