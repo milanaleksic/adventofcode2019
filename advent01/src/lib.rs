@@ -1,11 +1,11 @@
 pub struct Fuel {
-    pub value: i32
+    pub value: i32,
 }
 
 impl Fuel {
     pub fn from(fuel: i32) -> Fuel {
         Fuel {
-            value: fuel.clone()
+            value: fuel.clone(),
         }
     }
     pub fn fuel(f: i32) -> i32 {
@@ -30,8 +30,10 @@ pub fn fuel2(f: i32) -> i32 {
     Fuel::from(f).sum()
 }
 
+#[cfg(test)]
 mod tests {
-    use super::{fuel2,Fuel};
+    use super::{fuel2, Fuel};
+
     #[test]
     fn test12() {
         assert_eq!(Fuel::fuel(12), 2);
@@ -66,5 +68,4 @@ mod tests {
     fn test2_50346() {
         assert_eq!(fuel2(100756), 50346);
     }
-
 }

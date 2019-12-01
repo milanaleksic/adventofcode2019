@@ -1,4 +1,4 @@
-use advent01::{Fuel, fuel2};
+use advent01::{fuel2, Fuel};
 use std::fs;
 
 fn main() {
@@ -7,11 +7,11 @@ fn main() {
         .map(|x| Fuel::fuel(x.clone()))
         .sum();
     println!("answer 1: {}", answer1);
-    let answer2:i32 = read_input_as_ints("src/input2.txt")
+    let answer2: i32 = read_input_as_ints("src/input2.txt")
         .iter()
         .map(|x| fuel2(x.clone()))
         .sum();
-    println!("answer2: {}", answer2); 
+    println!("answer2: {}", answer2);
 }
 
 fn read_input_as_ints(path: &str) -> Vec<i32> {
