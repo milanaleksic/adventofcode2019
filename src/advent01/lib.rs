@@ -1,3 +1,27 @@
+use super::common;
+use crate::common::read_input_as_ints;
+
+pub struct Solver {
+}
+
+impl common::Solver for Solver {
+    fn solve_a(&self) -> String {
+        read_input_as_ints("advent01/input.txt")
+            .iter()
+            .map(|x| Fuel::fuel(x.clone()))
+            .sum::<i32>()
+            .to_string()
+    }
+
+    fn solve_b(&self) -> String {
+        read_input_as_ints("advent01/input2.txt")
+            .iter()
+            .map(|x| fuel2(x.clone()))
+            .sum::<i32>()
+            .to_string()
+    }
+}
+
 pub struct Fuel {
     pub value: i32,
 }
