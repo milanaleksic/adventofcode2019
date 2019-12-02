@@ -1,7 +1,8 @@
-use std::env;
 use std::fmt::Debug;
 use std::fs;
+use std::path::PathBuf;
 use std::str::FromStr;
+use std::env;
 
 pub trait Solver {
     fn name(&self) -> &str;
@@ -9,18 +10,12 @@ pub trait Solver {
     fn solve_b(&self) -> String;
 }
 
-pub fn read_input_as_rows<T>(path: &str) -> Vec<T>
+pub fn read_input_as_rows<T>(requested: &str) -> Vec<T>
 where
     T: FromStr,
     T::Err: Debug,
 {
-    let current_dir = env::current_dir().unwrap();
-    let last_dir = current_dir.file_name().unwrap();
-    let f = if last_dir == "src" {
-        String::from(path)
-    } else {
-        String::from("src/") + path
-    };
+    let f = find_root(env::current_dir().unwrap(), requested);
     fs::read_to_string(f)
         .expect("Input file not found")
         .lines()
@@ -28,21 +23,32 @@ where
         .collect::<Vec<T>>()
 }
 
-pub fn read_input_as_csv<T>(path: &str) -> Vec<T>
+pub fn read_input_as_csv<T>(requested: &str) -> Vec<T>
 where
     T: FromStr,
     T::Err: Debug,
 {
-    let current_dir = env::current_dir().unwrap();
-    let last_dir = current_dir.file_name().unwrap();
-    let f = if last_dir == "src" {
-        String::from(path)
-    } else {
-        String::from("src/") + path
-    };
+    let f = find_root(env::current_dir().unwrap(), requested);
     fs::read_to_string(f)
         .expect("Input file not found")
         .split(',')
         .map(|x| x.parse::<T>().unwrap())
         .collect::<Vec<T>>()
+}
+
+fn find_root(mut path: PathBuf, requested: &str) -> PathBuf {
+    loop {
+        path.push(".git");
+        if path.exists() && path.is_dir() {
+            path.pop();
+            path.push("src");
+            path.push(requested);
+            break;
+        }
+        else {
+            path.pop();
+            path.pop();
+        }
+    }
+    path
 }
