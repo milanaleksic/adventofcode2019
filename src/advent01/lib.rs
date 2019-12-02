@@ -5,6 +5,10 @@ pub struct Solver {
 }
 
 impl common::Solver for Solver {
+    fn name(&self) -> &str {
+        "advent 01"
+    }
+
     fn solve_a(&self) -> String {
         read_input_as_ints("advent01/input.txt")
             .iter()
