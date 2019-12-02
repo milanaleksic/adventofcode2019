@@ -7,8 +7,5 @@ mod advent01;
 mod advent02;
 
 pub fn all_solvers() -> Vec<Box<dyn common::Solver>> {
-    vec![
-        Box::new(advent01::Solver{}),
-        Box::new(advent02::Solver{}),
-    ]
+    vec![Box::new(advent01::Solver {}), Box::new(advent02::Solver {})]
 }
