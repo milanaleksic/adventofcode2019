@@ -6,6 +6,9 @@ use std::str::FromStr;
 
 pub trait Solver {
     fn name(&self) -> &str;
+    fn solve_all(&self) -> (String, String) {
+        (self.solve_a(), self.solve_b())
+    }
     fn solve_a(&self) -> String;
     fn solve_b(&self) -> String;
 }
@@ -60,4 +63,17 @@ fn find_root(mut path: PathBuf, requested: &str) -> PathBuf {
         }
     }
     path
+}
+
+pub fn if_smaller(best_so_far: Option<i32>, candidate: i32) -> Option<i32>{
+    match best_so_far {
+        Some(m) => {
+            if candidate < m {
+                Some(candidate)
+            } else {
+                best_so_far
+            }
+        }
+        None => Some(candidate),
+    }
 }
