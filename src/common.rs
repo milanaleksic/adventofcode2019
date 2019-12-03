@@ -1,8 +1,8 @@
+use std::env;
 use std::fmt::Debug;
 use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
-use std::env;
 
 pub trait Solver {
     fn name(&self) -> &str;
@@ -44,8 +44,7 @@ fn find_root(mut path: PathBuf, requested: &str) -> PathBuf {
             path.push("src");
             path.push(requested);
             break;
-        }
-        else {
+        } else {
             path.pop();
             path.pop();
         }
