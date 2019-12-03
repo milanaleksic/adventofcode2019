@@ -10,6 +10,16 @@ pub trait Solver {
     fn solve_b(&self) -> String;
 }
 
+pub fn read_input_as_rows_strings(requested: &str) -> Vec<String>
+{
+    let f = find_root(env::current_dir().unwrap(), requested);
+    fs::read_to_string(f)
+        .expect("Input file not found")
+        .lines()
+        .map(|x| String::from(x))
+        .collect::<Vec<String>>()
+}
+
 pub fn read_input_as_rows<T>(requested: &str) -> Vec<T>
 where
     T: FromStr,
