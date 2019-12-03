@@ -2,11 +2,11 @@ use std::cmp::Eq;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 
-use crate::common::read_input_as_rows_strings;
 use crate::common::if_smaller;
+use crate::common::read_input_as_rows_strings;
 
 use super::common;
-use std::fmt::{Display, Formatter, Error, Debug};
+use std::fmt::{Debug, Display, Error, Formatter};
 
 struct Cell {
     x: i32,
@@ -16,11 +16,7 @@ struct Cell {
 
 impl Cell {
     fn new(x: i32, y: i32, latency: i32) -> Cell {
-        Cell {
-            x,
-            y,
-            latency,
-        }
+        Cell { x, y, latency }
     }
     fn distance(&self) -> i32 {
         self.x.abs() + self.y.abs()
@@ -72,7 +68,7 @@ impl Solver {
         let cable1 = self.parse_road(cable1);
         let cable2 = self.parse_road(cable2);
         let field1 = self.walk(cable1);
-//        println!("Field1={:?}", field1);
+        //        println!("Field1={:?}", field1);
         let field2 = self.walk(cable2);
         let mut best_match_distance: Option<i32> = None;
         let mut best_match_latency: Option<i32> = None;
@@ -97,7 +93,7 @@ impl Solver {
                 latency += 1;
                 Solver::add_cell_if_missing(x, y, latency, &mut field);
             });
-            (1..=step.1.abs()).for_each(|_|{
+            (1..=step.1.abs()).for_each(|_| {
                 y += y_step;
                 latency += 1;
                 Solver::add_cell_if_missing(x, y, latency, &mut field);
@@ -149,7 +145,6 @@ impl common::Solver for Solver {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::Solver;
@@ -161,7 +156,10 @@ mod tests {
     #[test]
     fn test0() {
         assert_eq!(
-            Solver {}.solve_for(vec_of_strings!["R8", "U5", "L5", "D3"], vec_of_strings!["U7", "R6", "D4", "L4"]),
+            Solver {}.solve_for(
+                vec_of_strings!["R8", "U5", "L5", "D3"],
+                vec_of_strings!["U7", "R6", "D4", "L4"]
+            ),
             (6, 30)
         );
     }
@@ -181,7 +179,9 @@ mod tests {
     fn test2() {
         assert_eq!(
             Solver {}.solve_for(
-                vec_of_strings!["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"],
+                vec_of_strings![
+                    "R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"
+                ],
                 vec_of_strings!["U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"],
             ),
             (135, 410)

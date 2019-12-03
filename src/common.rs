@@ -13,8 +13,7 @@ pub trait Solver {
     fn solve_b(&self) -> String;
 }
 
-pub fn read_input_as_rows_strings(requested: &str) -> Vec<String>
-{
+pub fn read_input_as_rows_strings(requested: &str) -> Vec<String> {
     let f = find_root(env::current_dir().unwrap(), requested);
     fs::read_to_string(f)
         .expect("Input file not found")
@@ -65,7 +64,7 @@ fn find_root(mut path: PathBuf, requested: &str) -> PathBuf {
     path
 }
 
-pub fn if_smaller(best_so_far: Option<i32>, candidate: i32) -> Option<i32>{
+pub fn if_smaller(best_so_far: Option<i32>, candidate: i32) -> Option<i32> {
     match best_so_far {
         Some(m) => {
             if candidate < m {
