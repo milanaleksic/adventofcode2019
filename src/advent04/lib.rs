@@ -48,23 +48,17 @@ impl common::Solver for Solver {
     }
 
     fn solve_a(&self) -> String {
-        let mut count = 0;
-        for i in 240920..=789857 {
-            if self.has_two_identical_numbers_and_increasing(i) {
-                count += 1;
-            }
-        }
-        return count.to_string();
+        (240920..=789857)
+            .filter(|i| self.has_two_identical_numbers_and_increasing(*i))
+            .count()
+            .to_string()
     }
 
     fn solve_b(&self) -> String {
-        let mut count = 0;
-        for i in 240920..=789857 {
-            if self.has_non_repeating_groups(i) {
-                count += 1;
-            }
-        }
-        return count.to_string();
+        (240920..=789857)
+            .filter(|i| self.has_non_repeating_groups(*i))
+            .count()
+            .to_string()
     }
 }
 
