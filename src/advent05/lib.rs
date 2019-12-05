@@ -2,6 +2,16 @@ use crate::common::read_input_as_csv;
 
 use super::common;
 
+const ADD: i32 = 1;
+const MUL: i32 = 2;
+const WRITE: i32 = 3;
+const READ: i32 = 4;
+const JIT: i32 = 5;
+const JIF: i32 = 6;
+const LT: i32 = 7;
+const EQ: i32 = 8;
+const INT: i32 = 99;
+
 pub struct Solver {}
 
 impl Solver {
@@ -9,175 +19,74 @@ impl Solver {
         self.solve_for(input.clone(), data).1.to_string()
     }
 
+    fn op_mode(&self, instruction: i32, op: usize) -> usize {
+        let field = 10_i32.pow((op - 1) as u32);
+        (instruction / 100 / field % 10) as usize
+    }
+
     fn solve_for(&self, mut input: Vec<i32>, data: i32) -> (Vec<i32>, i32) {
         let mut data = data;
         let mut pc = 0;
         loop {
-            let instruction = input.get(pc).unwrap();
-            println!("instruction={} at pc={}", instruction, pc);
-            let opcode = instruction % 100;
-            let op1mode = instruction / 100 % 10;
-            let op2mode = instruction / 1000 % 10;
-            let op3mode = instruction / 10000 % 10;
-            match opcode {
-                1 => {
-                    println!("1");
-                    let target = input[pc + 3];
-                    let op1 = input[pc + 1];
-                    let op2 = input[pc + 2];
-                    let val1 = match op1mode {
-                        0 => input[op1 as usize],
-                        1 => op1,
-                        _ => panic!("Unexpected input"),
-                    };
-                    let val2 = match op2mode {
-                        0 => input[op2 as usize],
-                        1 => op2,
-                        _ => panic!("Unexpected input"),
-                    };
-                    let result = val1 + val2;
-                    println!("op3mode={} val1={} val2={} result={} input[225]={}", op3mode, val1, val2, result, input[225]);
-                    match op3mode {
-                        0 => input[target as usize] = result,
-                        1 => input[pc+3] = result,
-                        _ => panic!("Unexpected input"),
-                    }
+            let instruction = *input.get(pc).unwrap();
+            let operand = |op| {
+                let val_or_adr = input[pc + op];
+                match self.op_mode(instruction, op) {
+                    0 => input[val_or_adr as usize],
+                    1 => val_or_adr,
+                    _ => panic!("Unexpected input"),
+                }
+            };
+            let store = |op| match self.op_mode(instruction, op) {
+                0 => input[pc + op] as usize,
+                1 => pc + op,
+                _ => panic!("Unexpected input"),
+            };
+            match instruction % 100 {
+                ADD => {
+                    let loc = store(3);
+                    input[loc] = operand(1) + operand(2);
                     pc += 4;
                 }
-                2 => {
-                    println!("2");
-                    let target = input[pc + 3];
-                    let op1 = input[pc + 1];
-                    let op2 = input[pc + 2];
-                    let result = match op1mode {
-                        0 => input[op1 as usize],
-                        1 => op1,
-                        _ => panic!("Unexpected input"),
-                    } * match op2mode {
-                        0 => input[op2 as usize],
-                        1 => op2,
-                        _ => panic!("Unexpected input"),
-                    };
-                    match op3mode {
-                        0 => input[target as usize] = result,
-                        1 => input[pc+3] = result,
-                        _ => panic!("Unexpected input"),
-                    }
+                MUL => {
+                    let loc = store(3);
+                    input[loc] = operand(1) * operand(2);
                     pc += 4;
                 }
-                5 => {
-                    println!("5");
-                    let op1 = input[pc + 1];
-                    let op2 = input[pc + 2];
-                    let cond = match op1mode {
-                        0 => input[op1 as usize],
-                        1 => op1,
-                        _ => panic!("Unexpected input"),
-                    };
-                    let pointer = match op2mode {
-                        0 => input[op2 as usize],
-                        1 => op2,
-                        _ => panic!("Unexpected input"),
-                    };
-                    if cond != 0 {
-                        pc = pointer as usize;
-                    } else {
-                        pc += 3;
-                    }
-                }
-                6 => {
-                    println!("6");
-                    let op1 = input[pc + 1];
-                    let op2 = input[pc + 2];
-                    let cond = match op1mode {
-                        0 => input[op1 as usize],
-                        1 => op1,
-                        _ => panic!("Unexpected input"),
-                    };
-                    let pointer = match op2mode {
-                        0 => input[op2 as usize],
-                        1 => op2,
-                        _ => panic!("Unexpected input"),
-                    };
-                    if cond == 0 {
-                        pc = pointer as usize;
-                    } else {
-                        pc += 3;
-                    }
-                }
-                3 => {
-                    println!("3");
+                WRITE => {
                     let target = input[pc + 1];
                     input[target as usize] = data;
                     pc += 2;
                 }
-                7 => {
-                    println!("7");
-                    let target = input[pc + 3];
-                    let op1 = input[pc + 1];
-                    let op2 = input[pc + 2];
-                    let o1 = match op1mode {
-                        0 => input[op1 as usize],
-                        1 => op1,
-                        _ => panic!("Unexpected input"),
-                    };
-                    let o2 = match op2mode {
-                        0 => input[op2 as usize],
-                        1 => op2,
-                        _ => panic!("Unexpected input"),
-                    };
-                    if o1 < o2 {
-                        match op3mode {
-                            0 => input[target as usize] = 1,
-                            1 => input[pc+3] = 1,
-                            _ => panic!("Unexpected input"),
-                        }
-                    } else {
-                        match op3mode {
-                            0 => input[target as usize] = 0,
-                            1 => input[pc+3] = 0,
-                            _ => panic!("Unexpected input"),
-                        }
-                    }
-                    pc += 4;
-                }
-                8 => {
-                    println!("8");
-                    let target = input[pc + 3];
-                    let op1 = input[pc + 1];
-                    let op2 = input[pc + 2];
-                    let o1 = match op1mode {
-                        0 => input[op1 as usize],
-                        1 => op1,
-                        _ => panic!("Unexpected input"),
-                    };
-                    let o2 = match op2mode {
-                        0 => input[op2 as usize],
-                        1 => op2,
-                        _ => panic!("Unexpected input"),
-                    };
-                    if o1 == o2 {
-                        match op3mode {
-                            0 => input[target as usize] = 1,
-                            1 => input[pc+3] = 1,
-                            _ => panic!("Unexpected input"),
-                        }
-                    } else {
-                        match op3mode {
-                            0 => input[target as usize] = 0,
-                            1 => input[pc+3] = 0,
-                            _ => panic!("Unexpected input"),
-                        }
-                    }
-                    pc += 4;
-                }
-                4 => {
-                    println!("4");
-                    let target = input[pc + 1];
-                    data = input[target as usize];
+                READ => {
+                    data = operand(1);
                     pc += 2;
                 }
-                99 => {
+                JIT => {
+                    if operand(1) != 0 {
+                        pc = operand(2) as usize;
+                    } else {
+                        pc += 3;
+                    }
+                }
+                JIF => {
+                    if operand(1) == 0 {
+                        pc = operand(2) as usize;
+                    } else {
+                        pc += 3;
+                    }
+                }
+                LT => {
+                    let loc = store(3);
+                    input[loc] = if operand(1) < operand(2) { 1 } else { 0 };
+                    pc += 4;
+                }
+                EQ => {
+                    let loc = store(3);
+                    input[loc] = if operand(1) == operand(2) { 1 } else { 0 };
+                    pc += 4;
+                }
+                INT => {
                     break;
                 }
                 x => panic!("Not expected value {:?}", x),
@@ -210,16 +119,82 @@ mod tests {
     #[test]
     fn test1() {
         assert_eq!(
-            Solver {}.solve_for(vec![1002,4,3,4,33]),
-            (vec![1002,4,3,4,99], 1)
+            Solver {}.solve_for(vec![1002, 4, 3, 4, 33], 1),
+            (vec![1002, 4, 3, 4, 99], 1)
         );
     }
 
-//    #[test]
-//    fn test2() {
-//        assert_eq!(
-//            Solver {}.solve_for(vec![3,225,1,225,6,6,1100]),
-//            (vec![3,225,1,225,6,6,1101], 1)
-//        );
-//    }
+    #[test]
+    fn test2() {
+        assert_eq!(
+            Solver {}
+                .solve_for(
+                    vec![3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9],
+                    0,
+                )
+                .1,
+            0
+        );
+    }
+
+    #[test]
+    fn test3() {
+        assert_eq!(
+            Solver {}
+                .solve_for(vec![3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1], 0)
+                .1,
+            0
+        );
+    }
+
+    #[test]
+    fn test4() {
+        assert_eq!(
+            Solver {}
+                .solve_for(
+                    vec![
+                        3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106,
+                        0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1,
+                        46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99
+                    ],
+                    7,
+                )
+                .1,
+            999
+        );
+    }
+
+    #[test]
+    fn test5() {
+        assert_eq!(
+            Solver {}
+                .solve_for(
+                    vec![
+                        3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106,
+                        0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1,
+                        46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99
+                    ],
+                    8,
+                )
+                .1,
+            1000
+        );
+    }
+
+    #[test]
+    fn test6() {
+        assert_eq!(
+            Solver {}
+                .solve_for(
+                    vec![
+                        3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106,
+                        0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1,
+                        46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99
+                    ],
+                    10,
+                )
+                .1,
+            1001
+        );
+    }
 }
