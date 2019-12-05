@@ -15,7 +15,16 @@ mod advent04;
 #[path = "advent05/lib.rs"]
 mod advent05;
 
-pub fn all_solvers() -> Vec<Box<dyn common::Solver>> {
+pub trait Solver {
+    fn name(&self) -> &str;
+    fn solve_all(&self) -> (String, String) {
+        (self.solve_a(), self.solve_b())
+    }
+    fn solve_a(&self) -> String;
+    fn solve_b(&self) -> String;
+}
+
+pub fn all_solvers() -> Vec<Box<dyn Solver>> {
     vec![
         Box::new(advent01::Solver {}),
         Box::new(advent02::Solver {}),

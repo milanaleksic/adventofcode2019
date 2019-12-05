@@ -1,7 +1,5 @@
 use crate::common::read_input_as_csv;
 
-use super::common;
-
 pub struct Solver {}
 
 impl Solver {
@@ -40,7 +38,7 @@ impl Solver {
     }
 }
 
-impl common::Solver for Solver {
+impl crate::Solver for Solver {
     fn name(&self) -> &str {
         "advent 02"
     }

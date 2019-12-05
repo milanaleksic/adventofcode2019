@@ -1,9 +1,8 @@
-use super::common;
 use crate::common::read_input_as_rows;
 
 pub struct Solver {}
 
-impl common::Solver for Solver {
+impl crate::Solver for Solver {
     fn name(&self) -> &str {
         "advent 01"
     }

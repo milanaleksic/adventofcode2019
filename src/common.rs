@@ -4,15 +4,6 @@ use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-pub trait Solver {
-    fn name(&self) -> &str;
-    fn solve_all(&self) -> (String, String) {
-        (self.solve_a(), self.solve_b())
-    }
-    fn solve_a(&self) -> String;
-    fn solve_b(&self) -> String;
-}
-
 pub fn read_input_as_rows_strings(requested: &str) -> Vec<String> {
     let f = find_root(env::current_dir().unwrap(), requested);
     fs::read_to_string(f)

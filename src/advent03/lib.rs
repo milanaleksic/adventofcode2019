@@ -1,12 +1,10 @@
 use std::cmp::Eq;
 use std::collections::HashMap;
+use std::fmt::{Debug, Display, Error, Formatter};
 use std::hash::{Hash, Hasher};
 
 use crate::common::if_smaller;
 use crate::common::read_input_as_rows_strings;
-
-use super::common;
-use std::fmt::{Debug, Display, Error, Formatter};
 
 struct Cell {
     x: i32,
@@ -125,7 +123,7 @@ impl Solver {
     }
 }
 
-impl common::Solver for Solver {
+impl crate::Solver for Solver {
     fn name(&self) -> &str {
         "advent 03"
     }
