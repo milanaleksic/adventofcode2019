@@ -5,12 +5,12 @@ use super::common;
 pub struct Solver {}
 
 impl Solver {
-    fn solve(&self, input: &Vec<i32>) -> String {
-        self.solve_for(input.clone()).1.to_string()
+    fn solve(&self, input: &Vec<i32>, data: i32) -> String {
+        self.solve_for(input.clone(), data).1.to_string()
     }
 
-    fn solve_for(&self, mut input: Vec<i32>) -> (Vec<i32>, i32) {
-        let mut data = 1;
+    fn solve_for(&self, mut input: Vec<i32>, data: i32) -> (Vec<i32>, i32) {
+        let mut data = data;
         let mut pc = 0;
         loop {
             let instruction = input.get(pc).unwrap();
@@ -65,11 +65,111 @@ impl Solver {
                     }
                     pc += 4;
                 }
+                5 => {
+                    println!("5");
+                    let op1 = input[pc + 1];
+                    let op2 = input[pc + 2];
+                    let cond = match op1mode {
+                        0 => input[op1 as usize],
+                        1 => op1,
+                        _ => panic!("Unexpected input"),
+                    };
+                    let pointer = match op2mode {
+                        0 => input[op2 as usize],
+                        1 => op2,
+                        _ => panic!("Unexpected input"),
+                    };
+                    if cond != 0 {
+                        pc = pointer as usize;
+                    } else {
+                        pc += 3;
+                    }
+                }
+                6 => {
+                    println!("6");
+                    let op1 = input[pc + 1];
+                    let op2 = input[pc + 2];
+                    let cond = match op1mode {
+                        0 => input[op1 as usize],
+                        1 => op1,
+                        _ => panic!("Unexpected input"),
+                    };
+                    let pointer = match op2mode {
+                        0 => input[op2 as usize],
+                        1 => op2,
+                        _ => panic!("Unexpected input"),
+                    };
+                    if cond == 0 {
+                        pc = pointer as usize;
+                    } else {
+                        pc += 3;
+                    }
+                }
                 3 => {
                     println!("3");
                     let target = input[pc + 1];
                     input[target as usize] = data;
                     pc += 2;
+                }
+                7 => {
+                    println!("7");
+                    let target = input[pc + 3];
+                    let op1 = input[pc + 1];
+                    let op2 = input[pc + 2];
+                    let o1 = match op1mode {
+                        0 => input[op1 as usize],
+                        1 => op1,
+                        _ => panic!("Unexpected input"),
+                    };
+                    let o2 = match op2mode {
+                        0 => input[op2 as usize],
+                        1 => op2,
+                        _ => panic!("Unexpected input"),
+                    };
+                    if o1 < o2 {
+                        match op3mode {
+                            0 => input[target as usize] = 1,
+                            1 => input[pc+3] = 1,
+                            _ => panic!("Unexpected input"),
+                        }
+                    } else {
+                        match op3mode {
+                            0 => input[target as usize] = 0,
+                            1 => input[pc+3] = 0,
+                            _ => panic!("Unexpected input"),
+                        }
+                    }
+                    pc += 4;
+                }
+                8 => {
+                    println!("8");
+                    let target = input[pc + 3];
+                    let op1 = input[pc + 1];
+                    let op2 = input[pc + 2];
+                    let o1 = match op1mode {
+                        0 => input[op1 as usize],
+                        1 => op1,
+                        _ => panic!("Unexpected input"),
+                    };
+                    let o2 = match op2mode {
+                        0 => input[op2 as usize],
+                        1 => op2,
+                        _ => panic!("Unexpected input"),
+                    };
+                    if o1 == o2 {
+                        match op3mode {
+                            0 => input[target as usize] = 1,
+                            1 => input[pc+3] = 1,
+                            _ => panic!("Unexpected input"),
+                        }
+                    } else {
+                        match op3mode {
+                            0 => input[target as usize] = 0,
+                            1 => input[pc+3] = 0,
+                            _ => panic!("Unexpected input"),
+                        }
+                    }
+                    pc += 4;
                 }
                 4 => {
                     println!("4");
@@ -94,11 +194,12 @@ impl common::Solver for Solver {
 
     fn solve_a(&self) -> String {
         let input = read_input_as_csv::<i32>("advent05/input.txt");
-        self.solve(&input).to_string()
+        self.solve(&input, 1).to_string()
     }
 
     fn solve_b(&self) -> String {
-        String::from("")
+        let input = read_input_as_csv::<i32>("advent05/input.txt");
+        self.solve(&input, 5).to_string()
     }
 }
 
