@@ -15,6 +15,9 @@ mod advent04;
 #[path = "advent05/lib.rs"]
 mod advent05;
 
+#[path = "advent06/lib.rs"]
+mod advent06;
+
 pub trait Solver {
     fn name(&self) -> &str;
     fn solve_all(&self) -> (String, String) {
@@ -31,5 +34,6 @@ pub fn all_solvers() -> Vec<Box<dyn Solver>> {
         Box::new(advent03::Solver {}),
         Box::new(advent04::Solver {}),
         Box::new(advent05::Solver {}),
+        Box::new(advent06::Solver {}),
     ]
 }
