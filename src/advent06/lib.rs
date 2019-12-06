@@ -5,22 +5,13 @@ use crate::common::read_input_as_rows_strings;
 pub struct Solver {}
 
 impl Solver {
-    fn make_graph(&self, input: &Vec<String>) -> HashMap<String, Vec<String>> {
-        let mut field: HashMap<String, Vec<String>> = HashMap::new();
+    fn make_graph(&self, input: &Vec<String>) -> HashMap<String, String> {
+        let mut field: HashMap<String, String> = HashMap::new();
         input.iter().for_each(|line| {
             let mut splits = line.split(')');
             let split0 = splits.next().unwrap().to_string();
             let split1 = splits.next().unwrap().to_string();
-            match field.get(&split1) {
-                Some(existing) => {
-                    let mut new_vec = existing.clone();
-                    new_vec.push(split0);
-                    field.insert(split1, new_vec);
-                }
-                None => {
-                    field.insert(split1, vec![split0]);
-                }
-            }
+            field.insert(split1, split0);
         });
         field
     }
@@ -28,24 +19,11 @@ impl Solver {
     fn solve_graph_paths(&self, input: Vec<String>) -> String {
         let field = self.make_graph(&input);
         let mut count = 0;
-        field.iter().for_each(|(_target, sources)| {
-            let mut stack = sources.clone();
-            while !stack.is_empty() {
-                if stack.len() == 0 {
-                    break;
-                }
-                match stack.pop() {
-                    Some(existing) => {
-                        count += 1;
-                        match field.get(existing.as_str()) {
-                            Some(children) => {
-                                children.iter().for_each(|x| stack.push(x.clone()));
-                            }
-                            None => (),
-                        }
-                    }
-                    None => count += 1,
-                }
+        field.iter().for_each(|(_target, source)| {
+            let mut iter = Some(source);
+            while let Some(x) = iter {
+                count += 1;
+                iter = field.get(x);
             }
         });
         count.to_string()
@@ -57,7 +35,8 @@ impl Solver {
         let mut common_parent = 0;
         while path1.get(common_parent) == path2.get(common_parent)
             && common_parent < path1.len()
-            && common_parent < path2.len() {
+            && common_parent < path2.len()
+        {
             common_parent += 1;
         }
         ((path1.len() - common_parent) + (path2.len() - common_parent)).to_string()
@@ -65,26 +44,11 @@ impl Solver {
 
     fn get_orbits(&self, input: &Vec<String>, planet: &str) -> Vec<String> {
         let field = self.make_graph(&input);
-        let sources = field.get(planet).unwrap();
         let mut path = vec![];
-        let mut stack = sources.clone();
-        loop {
-            if stack.len() == 0 {
-                break;
-            }
-            match stack.pop() {
-                Some(existing) => {
-                    path.insert(0, existing.clone());
-                    match field.get(existing.as_str()) {
-                        Some(children) => {
-                            children.iter().for_each(|x| stack.push(x.clone()));
-                        }
-                        None => (),
-                    }
-                    ()
-                }
-                None => (),
-            }
+        let mut iter = field.get(planet);
+        while let Some(x) = iter {
+            path.insert(0, x.clone());
+            iter = field.get(x);
         }
         path
     }
