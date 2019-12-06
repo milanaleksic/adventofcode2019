@@ -146,10 +146,10 @@ impl Processor {
 
     fn step(&mut self) {
         let instruction = self.next();
-//        println!(
-//            "PC={} register={} instruction={:?}",
-//            self.pc, self.register, instruction
-//        );
+        //        println!(
+        //            "PC={} register={} instruction={:?}",
+        //            self.pc, self.register, instruction
+        //        );
         instruction.exec(self);
     }
 
