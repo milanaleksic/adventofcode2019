@@ -5,7 +5,8 @@ use crate::common::read_input_as_rows_strings;
 pub struct Solver {}
 
 impl Solver {
-    fn solve(&self, input: Vec<String>) -> String {
+
+    fn make_graph(&self, input: &Vec<String>) -> HashMap<String, Vec<String>> {
         let mut field: HashMap<String, Vec<String>> = HashMap::new();
         input.iter().for_each(|line| {
             let mut splits = line.split(')');
@@ -22,6 +23,11 @@ impl Solver {
                 }
             }
         });
+        field
+    }
+
+    fn solve(&self, input: Vec<String>) -> String {
+        let field = self.make_graph(&input);
         let mut count = 0;
         field.iter().for_each(|(_target, sources)| {
             let mut stack = sources.clone();
@@ -43,11 +49,56 @@ impl Solver {
                     }
                     None => count +=1,
                 }
-
             }
         });
         count.to_string()
     }
+
+    fn solve_common_prefix(&self, input: Vec<String>) -> String {
+        let field = self.make_graph(&input);
+        let path1 = self.get_orbits(&input, "SAN");
+        let path2 = self.get_orbits(&input, "YOU");
+        println!("SAN={:?}, YOU={:?}", path1, path2);
+        let mut common_parent = 0;
+        loop {
+            if path1.get(common_parent) != path2.get(common_parent) || common_parent >= path1.len() || common_parent >= path2.len() {
+                break;
+            }
+            common_parent += 1;
+        }
+        println!("common parent={}", common_parent);
+        ((path1.len()-common_parent) + (path2.len()- common_parent)).to_string()
+    }
+
+    fn get_orbits(&self, input: &Vec<String>, planet: &str) -> Vec<String> {
+        let field = self.make_graph(&input);
+        let mut count = 0;
+        let sources = field.get(planet).unwrap();
+        let mut path = vec![];
+        let mut stack = sources.clone();
+//            println!("Starting from {:?}", target);
+        loop {
+//                println!("Current stack {:?}", stack);
+            if stack.len() == 0 {
+                break;
+            }
+            match stack.pop() {
+                Some(existing) => {
+                    path.insert(0, existing.clone());
+                    count += 1;
+                    match field.get(existing.as_str()) {
+                        Some(children) => {
+                            children.iter().for_each(|x|stack.push(x.clone()));
+                        }
+                        None => (),
+                    }
+                }
+                None => count +=1,
+            }
+        }
+        path
+    }
+
 }
 
 impl crate::Solver for Solver {
@@ -61,7 +112,8 @@ impl crate::Solver for Solver {
     }
 
     fn solve_b(&self) -> String {
-        String::from("")
+        let input = read_input_as_rows_strings("advent06/input.txt");
+        self.solve_common_prefix(input).to_string()
     }
 }
 
@@ -79,6 +131,15 @@ mod tests {
             Solver {}.solve(vec_of_strings!["COM)B", "B)C", "C)D", "D)E", "E)F", "B)G",
                                  "G)H", "D)I", "E)J", "J)K", "K)L"]),
             "42"
+        );
+    }
+
+    #[test]
+    fn test2() {
+        assert_eq!(
+            Solver {}.solve_common_prefix(vec_of_strings!["COM)B", "B)C", "C)D", "D)E", "E)F", "B)G",
+                                 "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN"]),
+            "4"
         );
     }
 }
