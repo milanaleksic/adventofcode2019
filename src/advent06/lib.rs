@@ -30,7 +30,7 @@ impl Solver {
         let mut count = 0;
         field.iter().for_each(|(_target, sources)| {
             let mut stack = sources.clone();
-            loop {
+            while !stack.is_empty() {
                 if stack.len() == 0 {
                     break;
                 }
@@ -54,18 +54,12 @@ impl Solver {
     fn solve_common_prefix(&self, input: Vec<String>) -> String {
         let path1 = self.get_orbits(&input, "SAN");
         let path2 = self.get_orbits(&input, "YOU");
-        println!("SAN={:?}, YOU={:?}", path1, path2);
         let mut common_parent = 0;
-        loop {
-            if path1.get(common_parent) != path2.get(common_parent)
-                || common_parent >= path1.len()
-                || common_parent >= path2.len()
-            {
-                break;
-            }
+        while path1.get(common_parent) == path2.get(common_parent)
+            && common_parent < path1.len()
+            && common_parent < path2.len() {
             common_parent += 1;
         }
-        println!("common parent={}", common_parent);
         ((path1.len() - common_parent) + (path2.len() - common_parent)).to_string()
     }
 
